@@ -1,25 +1,38 @@
-import logo from './logo.svg';
 import './App.css';
+import { userSelector } from './store/user';
+import { useRecoilValueLoadable } from 'recoil';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const userLoadable = useRecoilValueLoadable(userSelector);
+
+  switch (userLoadable.state) {
+    case 'loading':
+      return <div>Loading...</div>;
+    case 'hasError':
+      return <div>Error: {userLoadable.contents.message}</div>;
+    case 'hasValue':
+      const userData = userLoadable.contents;
+      console.log(userData);
+
+      return (
+        <div>
+          {
+            userData.list.map(item => {
+              return (
+              <>
+                <div>用户名：{item.username}</div>
+                <div>密码：{item.password}</div>
+              </>
+              )
+            })
+          }
+       
+        </div>
+      );
+    default:
+      return null;
+  }
 }
 
 export default App;
